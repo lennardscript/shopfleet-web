@@ -1,0 +1,30 @@
+version: '3.7'
+
+networks:
+  shopfleet_network:
+
+services:
+  app:
+    image: laravel:10.x
+    container_name: shopfleet_app
+    environment:
+      APP_ENV: local
+      APP_DEBUG: true
+      APP_URL: http://localhost:8000
+    volumes:
+      - ./app:/var/www/html
+      - ./env:/var/www/html/.env
+    networks:
+      - shopfleet_network
+
+  db:
+    image: postgres:16
+    container_name: shopfleet_db
+    environment:
+      POSTGRES_PASSWORD: ${env:POSTGRES_PASSWORD}
+      POSTGRES_USER: ${env:POSTGRES_USER}
+      POSTGRES_DB: ${env:POSTGRES_DB}
+      networks:
+      - shopfleet_network
+    ports:
+      - "5432:5432"
