@@ -2,6 +2,7 @@
 
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\ProductController;
 
 /*
 |--------------------------------------------------------------------------
@@ -14,6 +15,21 @@ use Illuminate\Support\Facades\Route;
 |
 */
 
+// TODO: agruparlos con un prefix las rutas
+/*
+Route::prefix('api')->group(function () {
+
+});
+*/
+
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+// TODO: API products
+
+Route::get('products', [ProductController::class, 'index'])->name('api.products.index');
+Route::get('product/search/{name_product}', [ProductController::class, 'searchByName'])->name('api.products.searchByName');
+Route::patch('product/{slug}', [ProductController::class, 'update'])->name('api.products.update');
+Route::post('product', [ProductController::class, 'store'])->name('api.products.store');
+Route::delete('product/{product:slug}', [ProductController::class, 'destroy'])->name('api.products.destroy');
