@@ -1,11 +1,11 @@
 <?php
 
-namespace App\Http\Controllers;
+namespace App\Http\Controllers\Api\Products;
 
+use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductsRequests\StoreProductRequest;
 use App\Http\Requests\ProductsRequests\UpdateProductRequest;
-use App\Models\Product;
-use Illuminate\Http\Request;
+use App\Models\Products\Product;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
@@ -20,7 +20,9 @@ class ProductController extends Controller
     public function index()
     {
         //
-        $products = Product::all();
+        $products = Product::orderBy(function ($query) {
+            $query->selectRaw('LOWER(name_product)');
+        })->paginate(10);
         return response()->json(['products' => $products], 200);
     }
 
@@ -126,7 +128,7 @@ class ProductController extends Controller
     /**
      * Remove the specified resource from storage.
      */
-    public function destroy(Product $product, Request $request)
+    public function destroy(Product $product)
     {
         //
 

@@ -4,7 +4,7 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "f0ef1ec8257e150243e019273f023230",
+    "content-hash": "260ad8d2a612de615ee7b894e64ccc6e",
     "packages": [
         {
             "name": "brick/math",
@@ -2390,6 +2390,69 @@
                 }
             ],
             "time": "2023-02-08T01:06:31+00:00"
+        },
+        {
+            "name": "onecentlin/laravel-adminer",
+            "version": "6.1.1",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/onecentlin/laravel-adminer.git",
+                "reference": "7a226df15d60efda1583944d1505835ba6dcbd95"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/onecentlin/laravel-adminer/zipball/7a226df15d60efda1583944d1505835ba6dcbd95",
+                "reference": "7a226df15d60efda1583944d1505835ba6dcbd95",
+                "shasum": ""
+            },
+            "require": {
+                "illuminate/contracts": "~5.0|~6.0|~7.0|~8.0|~9.0|~10.0",
+                "illuminate/routing": "~5.0|~6.0|~7.0|~8.0|~9.0|~10.0",
+                "illuminate/support": "~5.0|~6.0|~7.0|~8.0|~9.0|~10.0",
+                "php": ">=5.4.0"
+            },
+            "type": "library",
+            "extra": {
+                "laravel": {
+                    "providers": [
+                        "Onecentlin\\Adminer\\ServiceProvider"
+                    ]
+                }
+            },
+            "autoload": {
+                "psr-4": {
+                    "Onecentlin\\Adminer\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Winnie Lin",
+                    "email": "onecentlin@gmail.com"
+                }
+            ],
+            "description": "Laravel Adminer Database Manager",
+            "keywords": [
+                "adminer",
+                "database",
+                "laravel10",
+                "laravel5",
+                "laravel6",
+                "laravel7",
+                "laravel8",
+                "laravel9",
+                "management",
+                "mysql",
+                "sqlite"
+            ],
+            "support": {
+                "issues": "https://github.com/onecentlin/laravel-adminer/issues",
+                "source": "https://github.com/onecentlin/laravel-adminer/tree/6.1.1"
+            },
+            "time": "2023-02-15T16:44:17+00:00"
         },
         {
             "name": "phpoption/phpoption",
