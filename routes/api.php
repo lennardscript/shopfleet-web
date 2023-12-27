@@ -24,8 +24,10 @@ Route::prefix('api')->group(function () {
 
 // TODO: API products
 
-Route::get('products', [ProductController::class, 'index'])->name('api.products.index');
-Route::get('product/search/{name_product}', [ProductController::class, 'searchByName'])->name('api.products.searchByName');
-Route::patch('product/{slug}', [ProductController::class, 'update'])->name('api.products.update');
-Route::post('product', [ProductController::class, 'store'])->name('api.products.store');
-Route::delete('product/{product:slug}', [ProductController::class, 'destroy'])->name('api.products.destroy');
+Route::prefix('products')->name('api.products.')->group(function () {
+    Route::get('/', [ProductController::class, 'index']);
+    Route::get('search/{name_product}', [ProductController::class, 'searchByName']);
+    Route::patch('{slug}', [ProductController::class, 'update']);
+    Route::post('/', [ProductController::class, 'store']);
+    Route::delete('{product:slug}', [ProductController::class, 'destroy']);
+});
