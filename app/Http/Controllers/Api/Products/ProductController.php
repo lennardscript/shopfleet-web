@@ -10,7 +10,7 @@ use App\Models\Products\Product;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-
+use Symfony\Component\HttpFoundation\Response;
 
 class ProductController extends Controller
 {
@@ -24,7 +24,7 @@ class ProductController extends Controller
         $products = Product::orderBy(function ($query) {
             $query->selectRaw('LOWER(name_product)');
         })->paginate(10);
-        return response()->json(['products' => $products], 200);
+        return response()->json(['products' => $products], Response::HTTP_OK);
     }
 
     /**
@@ -53,11 +53,11 @@ class ProductController extends Controller
             $product->save();
 
             Log::info('Product created successfully!');
-            return response()->json(['product' => $product], 201);
+            return response()->json(['product' => $product], Response::HTTP_CREATED);
         } catch (\Throwable $e) {
 
             Log::error('Error creating product: ', ['exception' => $e]);
-            return response()->json(['message' => 'An error ocurred while creating the product', 'error' => $e->getMessage()], 500);
+            return response()->json(['message' => 'An error ocurred while creating the product', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -85,7 +85,7 @@ class ProductController extends Controller
                 'name_category' => $product['category']['name_category']
             ]
         ];
-        return response()->json(['product' => $product], 200);
+        return response()->json(['product' => $product], Response::HTTP_OK);
     }
 
     // TODO: search products for name
@@ -93,17 +93,17 @@ class ProductController extends Controller
     {
 
         if (empty($name_product)) {
-            return response()->json(['message' => 'Please provide a name to search'], 422);
+            return response()->json(['message' => 'Please provide a name to search'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $products = Product::whereRaw('LOWER(name_product) LIKE LOWER(?)', ['%' . $name_product . '%'])->paginate(10);
 
         if ($products->isEmpty()) {
             Log::error('No products found for name: ' . $name_product);
-            return response()->json(['message' => 'Products not found', 'name_product' => $name_product], 404);
+            return response()->json(['message' => 'Products not found', 'name_product' => $name_product], Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json(['products' => $products], 200);
+        return response()->json(['products' => $products], Response::HTTP_OK);
     }
 
     /**
@@ -124,7 +124,7 @@ class ProductController extends Controller
         $product = Product::where('slug', $slug)->first();
 
         if (!$product) {
-            return response()->json(['message:' => 'Product not found'], 404);
+            return response()->json(['message:' => 'Product not found'], Response::HTTP_NOT_FOUND);
         }
 
         //TODO: obtener solo los campos que deseo actualizar
@@ -147,7 +147,7 @@ class ProductController extends Controller
 
 
         Log::info('Product updated successfully!');
-        return response()->json(['product' => $product], 200);
+        return response()->json(['product' => $product], Response::HTTP_OK);
     }
 
     /**
@@ -165,13 +165,13 @@ class ProductController extends Controller
 
             $product->delete();
 
-            return response()->json(['message' => 'Product deleted successfully!'], 200);
+            return response()->json(['message' => 'Product deleted successfully!'], Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
             Log::error("Error deleting product: " . $e->getMessage());
-            return response()->json(['message' => 'Product not found'], 404);
+            return response()->json(['message' => 'Product not found'], Response::HTTP_NOT_FOUND);
         } catch (\Throwable $e) {
             Log::error("Error deleting product: " . $e->getMessage());
-            return response()->json(['message' => 'An error ocurred while deleting the product'], 500);
+            return response()->json(['message' => 'An error ocurred while deleting the product'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }

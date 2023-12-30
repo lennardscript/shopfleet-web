@@ -8,8 +8,8 @@ use App\Http\Requests\CategoriesRequests\UpdateCategoryRequest;
 use App\Models\Categories\Category;
 use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
-use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Log;
+use Symfony\Component\HttpFoundation\Response;
 
 class CategoryController extends Controller
 {
@@ -22,7 +22,7 @@ class CategoryController extends Controller
         $categories = Category::orderBy(function ($query) {
             $query->selectRaw('LOWER(name_category)');
         })->paginate(10);
-        return response()->json(['categories' => $categories], 200);
+        return response()->json(['categories' => $categories], Response::HTTP_OK);
     }
 
     /**
@@ -44,10 +44,10 @@ class CategoryController extends Controller
             $category = Category::create($request->all());
 
             Log::info('Category created successfully!');
-            return response()->json(['category' => $category], 201);
+            return response()->json(['category' => $category], Response::HTTP_CREATED);
         } catch (\Throwable $e) {
             Log::error('Error creating category: ', ['exception' => $e]);
-            return response()->json(['message' => 'An error occurred while creating the category', 'error' => $e->getMessage()], 500);
+            return response()->json(['message' => 'An error occurred while creating the category', 'error' => $e->getMessage()], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -62,9 +62,9 @@ class CategoryController extends Controller
                 throw new Exception('No categories found with that name.');
             }
 
-            return response()->json(['categories' => $categories], 200);
+            return response()->json(['categories' => $categories], Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], 404);
+            return response()->json(['message' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         }
     }
 
@@ -99,7 +99,7 @@ class CategoryController extends Controller
         $category->save();
 
         Log::info('Category update suscessfully!');
-        return response()->json(['category' => $category], 200);
+        return response()->json(['category' => $category], Response::HTTP_OK);
     }
 
     /**
@@ -114,7 +114,6 @@ class CategoryController extends Controller
         $category->delete();
 
         Log::info('Category deleted successfully!');
-        return response()->json(['message' => 'Category deleted successfully!'], 200);
-
+        return response()->json(['message' => 'Category deleted successfully!'], Response::HTTP_OK);
     }
 }
