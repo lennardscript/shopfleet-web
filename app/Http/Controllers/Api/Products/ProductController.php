@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\Products;
 use App\Http\Controllers\Controller;
 use App\Http\Requests\ProductsRequests\StoreProductRequest;
 use App\Http\Requests\ProductsRequests\UpdateProductRequest;
+use App\Models\Categories\Category;
 use App\Models\Products\Product;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -42,7 +43,12 @@ class ProductController extends Controller
         //
         try {
 
-            $product = new Product($request->all());
+            // TODO: busca la categoría por su nombre
+            $category = Category::where('name_category', $request->category)->firstOrFail();
+
+            // TODO: crea un producto
+            $product = new Product($request->except('category'));
+            $product->id_category = $category->id_category;
             $product->slug = Str::slug($product->name_product);
             $product->save();
 
@@ -60,7 +66,26 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        //
+        $product->load('category');
+        $product->makeHidden('id_category');
+        $product = $product->toArray();
+        $product = [
+            'id_product' => $product['id_product'],
+            'name_product' => $product['name_product'],
+            'slug' => $product['slug'],
+            'description_product' => $product['description_product'],
+            'image_product' => $product['image_product'],
+            'price' => $product['price'],
+            'quantity' => $product['quantity'],
+            'status_product' => $product['status_product'],
+            'created_at' => $product['created_at'],
+            'updated_at' => $product['updated_at'],
+            'category' => [
+                'id_category' => $product['category']['id_category'],
+                'name_category' => $product['category']['name_category']
+            ]
+        ];
+        return response()->json(['product' => $product], 200);
     }
 
     // TODO: search products for name
@@ -102,7 +127,7 @@ class ProductController extends Controller
             return response()->json(['message:' => 'Product not found'], 404);
         }
 
-        //TODO: Obtener solo los campos que deseo actualizar
+        //TODO: obtener solo los campos que deseo actualizar
         $fieldsToUpdate = $request->only([
             'name_product',
             'slug',

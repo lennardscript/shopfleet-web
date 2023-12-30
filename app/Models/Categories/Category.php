@@ -2,6 +2,7 @@
 
 namespace App\Models\Categories;
 
+use App\Models\Products\Product;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 use Illuminate\Support\Str;
@@ -24,5 +25,10 @@ class Category extends Model
         self::creating(function ($model) {
             $model->id_category = (string) Str::uuid();
         });
+    }
+
+    public function products()
+    {
+        return $this->hasMany(Product::class);
     }
 }
