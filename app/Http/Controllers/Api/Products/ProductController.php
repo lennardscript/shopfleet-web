@@ -89,7 +89,7 @@ class ProductController extends Controller
     }
 
     // TODO: search products for name
-    public function searchByName($name_product)
+    public function search_name_product($name_product)
     {
 
         if (empty($name_product)) {

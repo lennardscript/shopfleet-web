@@ -26,7 +26,7 @@ Route::prefix('api')->group(function () {
 
 Route::prefix('products')->name('api.products.')->group(function () {
     Route::get('/', [ProductController::class, 'index']);
-    Route::get('search/{name_product}', [ProductController::class, 'searchByName']);
+    Route::get('search/{name_product}', [ProductController::class, 'search_name_product']);
     Route::patch('{slug}', [ProductController::class, 'update']);
     Route::post('/', [ProductController::class, 'store']);
     Route::delete('{product:slug}', [ProductController::class, 'destroy']);
@@ -39,5 +39,5 @@ Route::prefix('categories')->name('api.categories.')->group(function () {
     Route::post('/', [CategoryController::class, 'store']);
     Route::get('search/{name_category}', [CategoryController::class, 'search_category']);
     Route::patch('{name_category}', [CategoryController::class, 'update']);
-    Route::delete('{category:name_product}', [CategoryController::class, 'destroy']);
+    Route::delete('{category:name_category}', [CategoryController::class, 'destroy']);
 });
