@@ -1,0 +1,62 @@
+{
+    "openapi": "3.0.0",
+    "info": {
+        "title": "Documentación de las APIS de ShopFleet",
+        "description": "L5 Swagger OpenApi description para enterprises.",
+        "version": "1.0.0"
+    },
+    "paths": {
+        "/categories": {
+            "get": {
+                "operationId": "770185ab1a98c51e9abc421ceb6d86ba",
+                "responses": {
+                    "200": {
+                        "description": "Display a listing of the resource."
+                    }
+                }
+            },
+            "post": {
+                "operationId": "579a9f725af3bb867d44b14571deb8ae",
+                "responses": {
+                    "201": {
+                        "description": "Store a newly created resource in storage."
+                    }
+                }
+            }
+        },
+        "/categories/search/{name_category}": {
+            "get": {
+                "operationId": "db289eb2aeb030e8250e7ada5fd2fb20",
+                "responses": {
+                    "200": {
+                        "description": "Search categories for name."
+                    }
+                }
+            }
+        },
+        "/categories/{name_category}": {
+            "delete": {
+                "operationId": "7851d6214014196f040ee2fc03638800",
+                "responses": {
+                    "200": {
+                        "description": "Remove the specified resource from storage."
+                    }
+                }
+            },
+            "patch": {
+                "operationId": "13cdc35cf5a6e5f2f0fd6ae0936b76a1",
+                "responses": {
+                    "200": {
+                        "description": "Update the specified resource in storage."
+                    }
+                }
+            }
+        }
+    },
+    "tags": [
+        {
+            "name": "API Categories",
+            "description": "Operations about categories"
+        }
+    ]
+}

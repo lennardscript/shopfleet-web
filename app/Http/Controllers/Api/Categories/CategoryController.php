@@ -10,11 +10,22 @@ use Exception;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Log;
 use Symfony\Component\HttpFoundation\Response;
+use OpenApi\Annotations as OA;
+
+/**
+ * @OA\Tag(
+ *    name="API Categories",
+ *    description="Operations about categories"
+ * )
+ */
 
 class CategoryController extends Controller
 {
     /**
-     * Display a listing of the resource.
+     * @OA\Get(
+     *    path="categories",
+     *    @OA\Response(response="200", description="Display a listing of the resource.")
+     * )
      */
     public function index()
     {
@@ -34,8 +45,11 @@ class CategoryController extends Controller
     }
 
     /**
-     * Store a newly created resource in storage.
-     */
+    * @OA\Post(
+    *    path="categories",
+    *    @OA\Response(response="201", description="Store a newly created resource in storage.")
+    * )
+    */
     public function store(StoreCategoryRequest $request)
     {
         //
@@ -51,7 +65,12 @@ class CategoryController extends Controller
         }
     }
 
-    //TODO: search categories for name
+    /**
+    * @OA\Get(
+    *    path="categories/search/{name_category}",
+    *    @OA\Response(response="200", description="Search categories for name.")
+    * )
+    */
     public function search_category($name_category)
     {
 
@@ -85,8 +104,11 @@ class CategoryController extends Controller
     }
 
     /**
-     * Update the specified resource in storage.
-     */
+    * @OA\Patch(
+    *    path="categories/{name_category}",
+    *    @OA\Response(response="200", description="Update the specified resource in storage.")
+    * )
+    */
     public function update(UpdateCategoryRequest $request, string $name_category)
     {
         // TODO: buscar categoría por su nombre
@@ -103,8 +125,11 @@ class CategoryController extends Controller
     }
 
     /**
-     * Remove the specified resource from storage.
-     */
+    * @OA\Delete(
+    *    path="categories/{name_category}",
+    *    @OA\Response(response="200", description="Remove the specified resource from storage.")
+    * )
+    */
     public function destroy(string $name_category)
     {
         //TODO: busca categorías por su nombre
