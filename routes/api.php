@@ -3,6 +3,8 @@
 use App\Http\Controllers\Api\Categories\CategoryController;
 use Illuminate\Support\Facades\Route;
 use App\Http\Controllers\Api\Products\ProductController;
+use App\Http\Controllers\Api\Users\UserController;
+use Illuminate\Http\Request;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,6 +23,21 @@ Route::prefix('api')->group(function () {
 
 });
 */
+
+// TODO: API Users
+
+Route::group(['prefix' => 'auth'], function () {
+    Route::post('register', [UserController::class, 'register']);
+    Route::post('login', [UserController::class, 'login']);
+
+    Route::group(['middleware' => 'auth:sanctum'], function () {
+        Route::get('logout', [UserController::class, 'logout']);
+        Route::get('profile', [UserController::class, 'userProfile']);
+        Route::put('update-password', [UserController::class, 'updatePassword']);
+        Route::patch('update-profile', [UserController::class, 'updateProfile']);
+        Route::delete('delete-account', [UserController::class, 'deleteAccount']);
+    });
+});
 
 // TODO: API products
 
