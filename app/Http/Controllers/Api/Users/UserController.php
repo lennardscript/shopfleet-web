@@ -4,20 +4,24 @@ namespace App\Http\Controllers\Api\Users;
 
 use App\Http\Controllers\Controller;
 use App\Http\Requests\UsersRequests\DeleteAccountUserRequest;
+use App\Http\Requests\UsersRequests\ForgotPasswordRequest;
 use App\Http\Requests\UsersRequests\LoginUserRequest;
 use App\Http\Requests\UsersRequests\LogoutUserRequest;
 use App\Http\Requests\UsersRequests\ProfileUserRequest;
 use App\Http\Requests\UsersRequests\RegisterUserRequest;
+use App\Http\Requests\UsersRequests\ResetPasswordRequest;
 use App\Http\Requests\UsersRequests\UpdatePasswordRequest;
 use App\Http\Requests\UsersRequests\UpdateProfileRequest;
 use App\Models\Users\User;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class UserController extends Controller
 {
-    public function register(RegisterUserRequest $request) {
+    public function register(RegisterUserRequest $request)
+    {
 
         try {
             $user = User::create([
@@ -35,7 +39,8 @@ class UserController extends Controller
         }
     }
 
-    public function login(LoginUserRequest $request) {
+    public function login(LoginUserRequest $request)
+    {
 
         try {
 
@@ -48,29 +53,30 @@ class UserController extends Controller
             $token = $user->createToken('myapptoken')->plainTextToken;
 
             return response()->json(['message' => 'User logged in successfully!', 'token' => $token], Response::HTTP_CREATED);
-
         } catch (\Exception $e) {
             Log::error($e);
-            return response()->json(['message'=> 'Failed to login'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['message' => 'Failed to login'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
-    public function userProfile(ProfileUserRequest $request) {
+    public function userProfile(ProfileUserRequest $request)
+    {
 
         return response()->json(['user' => $request->user()], Response::HTTP_OK);
     }
 
-    public function updateProfile(UpdateProfileRequest $request) {
+    public function updateProfile(UpdateProfileRequest $request)
+    {
 
         $user = $request->user();
 
         $user->fill($request->validated())->save();
 
         return response()->json(['message' => 'Profile updated successfully!', 'user' => $user], Response::HTTP_OK);
-
     }
 
-    public function updatePassword(UpdatePasswordRequest $request) {
+    public function updatePassword(UpdatePasswordRequest $request)
+    {
 
         $user = $request->user();
 
@@ -81,17 +87,49 @@ class UserController extends Controller
         $user->fill(['password' => Hash::make($request->new_password)])->save();
 
         return response()->json(['message' => 'Password changed successfully!'], Response::HTTP_OK);
-
     }
 
-    public function logout(LogoutUserRequest $request) {
+    public function forgotPassword(ForgotPasswordRequest $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user) {
+            return response()->json(['message' => 'No user found with this email.'], Response::HTTP_NOT_FOUND);
+        }
+
+        $token = Str::random(60);
+
+        $user->password_reset_token = $token;
+        $user->save();
+
+        return response()->json(['token' => $token], Response::HTTP_OK);
+    }
+
+    public function resetPassword(ResetPasswordRequest $request)
+    {
+        $user = User::where('email', $request->email)->first();
+
+        if (!$user || $user->password_reset_token !== $request->token) {
+            return response()->json(['message' => 'Invalid token.'], Response::HTTP_UNAUTHORIZED);
+        }
+
+        $user->password = Hash::make($request->password);
+        $user->password_reset_token = null;
+        $user->save();
+
+        return response()->json(['message' => 'Password reset successfully!'], Response::HTTP_OK);
+    }
+
+    public function logout(LogoutUserRequest $request)
+    {
 
         $request->user()->currentAccessToken()->delete();
 
         return response()->json(['message' => 'User logged out successfully!'], Response::HTTP_OK);
     }
 
-    public function deleteAccount(DeleteAccountUserRequest $request) {
+    public function deleteAccount(DeleteAccountUserRequest $request)
+    {
 
         $request->user()->delete();
 

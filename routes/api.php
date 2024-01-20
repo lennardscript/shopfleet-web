@@ -29,6 +29,8 @@ Route::prefix('api')->group(function () {
 Route::group(['prefix' => 'auth'], function () {
     Route::post('register', [UserController::class, 'register']);
     Route::post('login', [UserController::class, 'login']);
+    Route::post('forgot-password', [UserController::class, 'forgotPassword']);
+    Route::post('reset-password', [UserController::class, 'resetPassword']);
 
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('logout', [UserController::class, 'logout']);
