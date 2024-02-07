@@ -13,6 +13,7 @@ use App\Http\Requests\UsersRequests\ResetPasswordRequest;
 use App\Http\Requests\UsersRequests\UpdatePasswordRequest;
 use App\Http\Requests\UsersRequests\UpdateProfileRequest;
 use App\Models\Users\User;
+use App\Notifications\UserNotification\ResetPasswordNotification;
 use Illuminate\Http\Response;
 use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Facades\Log;
@@ -102,7 +103,9 @@ class UserController extends Controller
         $user->password_reset_token = $token;
         $user->save();
 
-        return response()->json(['token' => $token], Response::HTTP_OK);
+        $user->notify(new ResetPasswordNotification($token, $request->email, $user->username));
+
+        return response()->json(['Password reset link sent to your email!' => $token], Response::HTTP_OK);
     }
 
     public function resetPassword(ResetPasswordRequest $request)
