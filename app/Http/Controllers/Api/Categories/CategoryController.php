@@ -83,7 +83,7 @@ class CategoryController extends Controller
 
             return response()->json(['categories' => $categories], Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
-            return response()->json(['message' => $e->getMessage()], Response::HTTP_NOT_FOUND);
+            return response()->json(['info' => $e->getMessage()], Response::HTTP_NOT_FOUND);
         }
     }
 

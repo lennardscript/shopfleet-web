@@ -41,7 +41,7 @@ class UserController extends Controller
             return response()->json(['message' => 'User created successfully!', 'token' => $token], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             Log::error('Registrarion failed:', ['exception' => $e]);
-            return response()->json(['message' => 'Failed to create user'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['error' => 'Failed to create user'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -101,7 +101,7 @@ class UserController extends Controller
             return response()->json(['message' => 'User logged in successfully!', 'token' => $token], Response::HTTP_CREATED);
         } catch (\Exception $e) {
             Log::error($e);
-            return response()->json(['message' => 'Failed to login'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['error' => 'Failed to login'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 
@@ -140,7 +140,7 @@ class UserController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user) {
-            return response()->json(['message' => 'No user found with this email.'], Response::HTTP_NOT_FOUND);
+            return response()->json(['info' => 'No user found with this email.'], Response::HTTP_NOT_FOUND);
         }
 
         $token = Str::random(60);
@@ -158,7 +158,7 @@ class UserController extends Controller
         $user = User::where('email', $request->email)->first();
 
         if (!$user || $user->password_reset_token !== $request->token) {
-            return response()->json(['message' => 'Invalid token.'], Response::HTTP_UNAUTHORIZED);
+            return response()->json(['error' => 'Invalid token.'], Response::HTTP_UNAUTHORIZED);
         }
 
         $user->password = Hash::make($request->password);

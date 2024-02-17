@@ -112,14 +112,14 @@ class ProductController extends Controller
     {
 
         if (empty($name_product)) {
-            return response()->json(['message' => 'Please provide a name to search'], Response::HTTP_UNPROCESSABLE_ENTITY);
+            return response()->json(['info' => 'Please provide a name to search'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
         $products = Product::whereRaw('LOWER(name_product) LIKE LOWER(?)', ['%' . $name_product . '%'])->paginate(10);
 
         if ($products->isEmpty()) {
             Log::error('No products found for name: ' . $name_product);
-            return response()->json(['message' => 'Products not found', 'name_product' => $name_product], Response::HTTP_NOT_FOUND);
+            return response()->json(['info' => 'Products not found', 'name_product' => $name_product], Response::HTTP_NOT_FOUND);
         }
 
         return response()->json(['products' => $products], Response::HTTP_OK);
@@ -146,7 +146,7 @@ class ProductController extends Controller
         $product = Product::where('slug', $slug)->first();
 
         if (!$product) {
-            return response()->json(['message:' => 'Product not found'], Response::HTTP_NOT_FOUND);
+            return response()->json(['info:' => 'Product not found'], Response::HTTP_NOT_FOUND);
         }
 
         //TODO: obtener solo los campos que deseo actualizar
@@ -193,10 +193,10 @@ class ProductController extends Controller
             return response()->json(['message' => 'Product deleted successfully!'], Response::HTTP_OK);
         } catch (ModelNotFoundException $e) {
             Log::error("Error deleting product: " . $e->getMessage());
-            return response()->json(['message' => 'Product not found'], Response::HTTP_NOT_FOUND);
+            return response()->json(['info' => 'Product not found'], Response::HTTP_NOT_FOUND);
         } catch (\Throwable $e) {
             Log::error("Error deleting product: " . $e->getMessage());
-            return response()->json(['message' => 'An error ocurred while deleting the product'], Response::HTTP_INTERNAL_SERVER_ERROR);
+            return response()->json(['error' => 'An error ocurred while deleting the product'], Response::HTTP_INTERNAL_SERVER_ERROR);
         }
     }
 }
