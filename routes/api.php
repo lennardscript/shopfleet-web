@@ -28,6 +28,9 @@ Route::prefix('api')->group(function () {
 
 Route::group(['prefix' => 'auth'], function () {
     Route::post('register', [UserController::class, 'register']);
+    Route::get('verify-email/{uuid}/{hash}', [UserController::class, 'verifyEmail'])
+        ->name('verification.verify');
+    Route::post('resend-verification-email', [UserController::class, 'resendVerificationEmail']);
     Route::post('login', [UserController::class, 'login']);
     Route::post('forgot-password', [UserController::class, 'forgotPassword']);
     Route::post('reset-password', [UserController::class, 'resetPassword']);
@@ -35,6 +38,7 @@ Route::group(['prefix' => 'auth'], function () {
     Route::group(['middleware' => 'auth:sanctum'], function () {
         Route::get('logout', [UserController::class, 'logout']);
         Route::get('profile', [UserController::class, 'userProfile']);
+        Route::post('auto-verify-email', [UserController::class, 'autoVerificationEmail']);
         Route::put('update-password', [UserController::class, 'updatePassword']);
         Route::patch('update-profile', [UserController::class, 'updateProfile']);
         Route::delete('delete-account', [UserController::class, 'deleteAccount']);

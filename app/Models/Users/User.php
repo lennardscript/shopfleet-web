@@ -2,14 +2,16 @@
 
 namespace App\Models\Users;
 
-// use Illuminate\Contracts\Auth\MustVerifyEmail;
+use App\Notifications\userNotification\VerifyEmailNotification;
+use Illuminate\Contracts\Auth\MustVerifyEmail;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
+use Illuminate\Support\Facades\Hash;
 use Illuminate\Support\Str;
 use Laravel\Sanctum\HasApiTokens;
 
-class User extends Authenticatable
+class User extends Authenticatable implements MustVerifyEmail
 {
     use HasApiTokens, HasFactory, Notifiable;
 
@@ -26,6 +28,8 @@ class User extends Authenticatable
         'username',
         'email',
         'password',
+        'verification_token',
+        'email_verified_at',
     ];
 
     /**
@@ -46,6 +50,25 @@ class User extends Authenticatable
     protected $casts = [
         'email_verified_at' => 'datetime',
     ];
+
+    public function sendEmailVerificationNotification()
+    {
+
+        //TODO: genera un token de verificación aleatorio y lo asigna al modelo de usuario
+        $this->forceFill([
+            'verification_token' => Str::random(60)
+        ])->save();
+
+        //TODO: envía la notificación con el token de verificación
+        $this->notify(new VerifyEmailNotification($this->username));
+    }
+
+    public function markEmailAsVerified()
+    {
+        $this->forceFill([
+            'email_verified_at' => $this->freshTimestamp(),
+        ])->save();
+    }
 
     protected static function boot()
     {
