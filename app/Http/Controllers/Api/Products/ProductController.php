@@ -10,25 +10,11 @@ use App\Models\Products\Product;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
+use Illuminate\Support\Facades\Storage;
 use Symfony\Component\HttpFoundation\Response;
-use OpenApi\Annotations as OA;
-
-/**
- * @OA\Tag(
- *    name="API Products",
- *    description="Operations about products"
- * )
- */
 
 class ProductController extends Controller
 {
-
-    /**
-     * @OA\Get(
-     *    path="products",
-     *    @OA\Response(response="200", description="Display a listing of the resource.")
-     * )
-     */
     public function index()
     {
         //
@@ -46,12 +32,6 @@ class ProductController extends Controller
         //
     }
 
-    /**
-    * @OA\Post(
-    *    path="products",
-    *    @OA\Response(response="201", description="Store a newly created resource in storage.")
-    * )
-    */
     public function store(StoreProductRequest $request)
     {
         //
@@ -65,6 +45,18 @@ class ProductController extends Controller
             $product->id_category = $category->id_category;
             $product->slug = Str::slug($product->name_product);
             $product->save();
+
+            //TODO: crea un directorio o carpeta para las imagenes subidas
+            $imgDirectory = 'products/' . $product->id_product;
+            Storage::makeDirectory($imgDirectory);
+
+            //TODO: guarda la imagen subida
+            if ($request->hasFile('image_product')) {
+                $image = $request->file('image_product');
+                $imgPath = $image->store($imgDirectory, 'public');
+                $product->image_product = $imgPath;
+                $product->save();
+            }
 
             Log::info('Product created successfully!');
             return response()->json(['product' => $product], Response::HTTP_CREATED);
@@ -102,12 +94,6 @@ class ProductController extends Controller
         return response()->json(['product' => $product], Response::HTTP_OK);
     }
 
-    /**
-    * @OA\Get(
-    *    path="products/search/{name_product}",
-    *    @OA\Response(response="200", description="Search products for name.")
-    * )
-    */
     public function search_name_product($name_product)
     {
 
@@ -133,12 +119,6 @@ class ProductController extends Controller
         //
     }
 
-    /**
-    * @OA\Patch(
-    *    path="products/{slug}",
-    *    @OA\Response(response="200", description="Update the specified resource in storage.")
-    * )
-    */
     public function update(UpdateProductRequest $request, string $slug)
     {
         //
@@ -172,12 +152,6 @@ class ProductController extends Controller
         return response()->json(['product' => $product], Response::HTTP_OK);
     }
 
-    /**
-    * @OA\Delete(
-    *    path="products/{product:slug}",
-    *    @OA\Response(response="200", description="Remove the specified resource from storage.")
-    * )
-    */
     public function destroy(Product $product)
     {
         //
