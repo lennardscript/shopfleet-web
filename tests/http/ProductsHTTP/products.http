@@ -1,0 +1,31 @@
+@url_base = http://localhost:8000/api
+
+
+### Enlista todos los productos disponibles
+GET {{url_base}}/products
+
+### Crea o inserta un nuevo producto
+POST {{url_base}}/products
+Content-Type: application/json
+
+{
+    "name_product": "test",
+    "description_product": "test",
+    "price": 2000,
+    "quantity": 6,
+    "category": "test1"
+}
+
+### Buscar producto por su nombre (introducir el nombre del producto como parametro)
+GET {{url_base}}/products/search/test
+
+### Actualizar un producto (introducir el slug del producto como parametro)
+PATCH {{url_base}}/product/testeando
+Content-Type: application/json
+
+{
+    "description_product": "testandodescripcion"
+}
+
+### Eliminar un producto (introducir el nombre del producto o slug)
+DELETE {{url_base}}/products/test3
