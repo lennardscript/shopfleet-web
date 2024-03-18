@@ -8,6 +8,7 @@ use App\Http\Requests\ProductsRequests\UpdateProductRequest;
 use App\Models\Categories\Category;
 use App\Models\Products\Product;
 use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Facades\Redis;
 use Illuminate\Support\Str;
 use Illuminate\Database\Eloquent\ModelNotFoundException;
 use Illuminate\Support\Facades\Storage;
@@ -17,11 +18,25 @@ class ProductController extends Controller
 {
     public function index()
     {
-        //
-        $products = Product::orderBy(function ($query) {
-            $query->selectRaw('LOWER(name_product)');
-        })->paginate(10);
+
+        $products = Redis::get('products:paginated');
+
+        if (!$products) {
+            $products = Product::orderBy(function ($query) {
+                $query->selectRaw('LOWER(name_product)');
+            })->paginate(10);
+
+            //TODO: almacenar los productos paginados en Redis por 350 segundos
+            Redis::setex('products:paginated', 350, serialize($products));
+
+        } else {
+
+            //TODO: deserializar los productos almacenados en Redis
+            $products = unserialize($products);
+        }
+
         return response()->json(['products' => $products], Response::HTTP_OK);
+
     }
 
     /**
@@ -58,6 +73,9 @@ class ProductController extends Controller
                 $product->save();
             }
 
+            //TODO: invalidación de la caché de productos paginados
+            Redis::del('products:paginated');
+
             Log::info('Product created successfully!');
             return response()->json(['product' => $product], Response::HTTP_CREATED);
         } catch (\Throwable $e) {
@@ -72,32 +90,52 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
-        $product->load('category');
-        $product->makeHidden('id_category');
-        $product = $product->toArray();
-        $product = [
-            'id_product' => $product['id_product'],
-            'name_product' => $product['name_product'],
-            'slug' => $product['slug'],
-            'description_product' => $product['description_product'],
-            'image_product' => $product['image_product'],
-            'price' => $product['price'],
-            'quantity' => $product['quantity'],
-            'status_product' => $product['status_product'],
-            'created_at' => $product['created_at'],
-            'updated_at' => $product['updated_at'],
-            'category' => [
-                'id_category' => $product['category']['id_category'],
-                'name_category' => $product['category']['name_category']
-            ]
-        ];
+
+        $productDetails = Redis::get('product:' . $product->id_product);
+
+        if (!$productDetails) {
+            $product->load('category');
+            $product->makeHidden('id_category');
+            $productDetails = $product->toArray();
+
+            //TODO: almacenar los detalles del producto en Redis por 350 segundos
+            Redis::setex('product:' . $product->id_product, 350, serialize($productDetails));
+
+        } else {
+
+            //TODO: deserializar los detalles del producto almacenados en Redis
+            $productDetails = unserialize($productDetails);
+        }
+
         return response()->json(['product' => $product], Response::HTTP_OK);
+
     }
 
     public function search_name_product($name_product)
     {
 
-        if (empty($name_product)) {
+        $products = Redis::get('products:search:' . $name_product);
+
+        if (!$products) {
+
+            $products = Product::whereRaw('LOWER(name_product) LIKE LOWER(?)', ['%' . $name_product . '%'])->paginate(10);
+
+            //TODO: almacenar los resultados de búsqueda en Redis por 350 segundos
+            Redis::setex('products:search:' . $name_product, 350, serialize($products));
+        } else {
+
+            //TODO: deserializar los resultados de búsqueda almacenados en Redis
+            $products = unserialize($products);
+        }
+
+        if ($products->isEmpty()) {
+            Log::error('No products found for name: ' . $name_product);
+            return response()->json(['info' => 'Products not found', 'name_product' => $name_product], Response::HTTP_NOT_FOUND);
+        }
+
+        return response()->json(['product'=> $products], Response::HTTP_OK);
+
+        /* if (empty ($name_product)) {
             return response()->json(['info' => 'Please provide a name to search'], Response::HTTP_UNPROCESSABLE_ENTITY);
         }
 
@@ -108,7 +146,7 @@ class ProductController extends Controller
             return response()->json(['info' => 'Products not found', 'name_product' => $name_product], Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json(['products' => $products], Response::HTTP_OK);
+        return response()->json(['products' => $products], Response::HTTP_OK); */
     }
 
     /**
