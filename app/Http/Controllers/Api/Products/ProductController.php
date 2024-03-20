@@ -138,18 +138,6 @@ class ProductController extends Controller
 
         return response()->json(['product' => $products], Response::HTTP_OK);
 
-        /* if (empty ($name_product)) {
-            return response()->json(['info' => 'Please provide a name to search'], Response::HTTP_UNPROCESSABLE_ENTITY);
-        }
-
-        $products = Product::whereRaw('LOWER(name_product) LIKE LOWER(?)', ['%' . $name_product . '%'])->paginate(10);
-
-        if ($products->isEmpty()) {
-            Log::error('No products found for name: ' . $name_product);
-            return response()->json(['info' => 'Products not found', 'name_product' => $name_product], Response::HTTP_NOT_FOUND);
-        }
-
-        return response()->json(['products' => $products], Response::HTTP_OK); */
     }
 
     /**
