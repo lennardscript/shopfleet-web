@@ -19,7 +19,13 @@ class ProductController extends Controller
     public function index()
     {
 
-        $products = Redis::get('products:paginated');
+        /*TODO: almacena y recupera la caché a nivel de paginación y por cada
+                página de productos, se le asigna su propia clave caché
+        */
+        $currentPage = request()->get("page", 1);
+        $cacheKey = "products:paginated:page:{$currentPage}";
+
+        $products = Redis::get($cacheKey);
 
         if (!$products) {
             $products = Product::orderBy(function ($query) {
@@ -27,7 +33,7 @@ class ProductController extends Controller
             })->paginate(10);
 
             //TODO: almacenar los productos paginados en Redis por 350 segundos
-            Redis::setex('products:paginated', 350, serialize($products));
+            Redis::setex($cacheKey, 350, serialize($products));
 
         } else {
 
@@ -72,9 +78,6 @@ class ProductController extends Controller
                 $product->image_product = $imgPath;
                 $product->save();
             }
-
-            //TODO: invalidación de la caché de productos paginados
-            Redis::del('products:paginated');
 
             Log::info('Product created successfully!');
             return response()->json(['product' => $product], Response::HTTP_CREATED);
@@ -133,7 +136,7 @@ class ProductController extends Controller
             return response()->json(['info' => 'Products not found', 'name_product' => $name_product], Response::HTTP_NOT_FOUND);
         }
 
-        return response()->json(['product'=> $products], Response::HTTP_OK);
+        return response()->json(['product' => $products], Response::HTTP_OK);
 
         /* if (empty ($name_product)) {
             return response()->json(['info' => 'Please provide a name to search'], Response::HTTP_UNPROCESSABLE_ENTITY);
@@ -184,7 +187,6 @@ class ProductController extends Controller
 
         $product->fill($fieldsToUpdate);
         $product->save();
-
 
         Log::info('Product updated successfully!');
         return response()->json(['product' => $product], Response::HTTP_OK);
