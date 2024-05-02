@@ -55,17 +55,6 @@ This software uses the following open source packages:
 - ![Laravel](https://img.shields.io/badge/Laravel-FF2D20?logo=laravel&logoColor=fff&style=for-the-badge)
 - ![PostgreSQL](https://img.shields.io/badge/PostgreSQL-4169E1.svg?style=for-the-badge&logo=PostgreSQL&logoColor=white)
 - ![Docker](https://img.shields.io/badge/Docker-2496ED.svg?style=for-the-badge&logo=Docker&logoColor=white)
-  
-## Developers
-
-The development team behind the platform
-
-<table align="center">
-  <tr>
-    <td align="center"><a href="https://leaburgos.netlify.app/"><img src="https://i.imgur.com/NhfTbTW.jpeg" width="100px;" alt="Leandro Burgos"/><br /><sub><b>Leandro Burgos</b></sub></a><br /><p title="Code">💻</p></td>
-    <td align="center"><a href="#"><img src="https://i.imgur.com/3s5t5UC.png" width="75px;" alt="Ignacio Godoy"/><br /><sub><b>Ignacio Godoy</b></sub></a><br /><p title="Code">💻</p></td>
-  </tr>
-</table>
 
 ## Gratitude
 
