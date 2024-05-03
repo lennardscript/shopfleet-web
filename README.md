@@ -16,7 +16,6 @@
 <p align="center">
   <a href="#key-features">Key Features</a> •
   <a href="#technologies">Technologies</a> •
-  <a href="#developers">Developers</a> •
   <a href="#gratitude">Gratitude</a> •
   <a href="#license">License</a>
 </p>
